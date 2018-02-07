@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
@@ -12,15 +11,24 @@ import (
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	dbHandle, err := sql.Open("sqlite3", "./database.db")
+	cdb, err := db.CachedDatabase()
 	if err != nil {
 		log.Panicf("Error while opening database: %s\n", err)
 	}
-	defer dbHandle.Close()
-	err = db.CreateDatabase(dbHandle)
-	if err != nil {
-		log.Fatalf("SQL error: %+v\n", err)
-	}
+	defer cdb.Close()
 
-	log.Fatal(http.ListenAndServe(":8080", http.FileServer(http.Dir("./public-html"))))
+	http.HandleFunc("/json", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			json, err := cdb.GetJson()
+			log.Print(cdb.Cache)
+			if err != nil {
+				log.Panicf("Error getting database: %s\n", err)
+			}
+			w.Write(json)
+		} else if r.Method == "POST" {
+
+		}
+	})
+	http.Handle("/", http.FileServer(http.Dir("./public-html")))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
