@@ -2,20 +2,13 @@ package db
 
 import (
 	"database/sql"
-	"encoding/json"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 )
 
-type cache struct {
-	Locations []location
-	Logs      []temperatureLog
-}
-
-type cachedDatabase struct {
-	Database *sql.DB
-	Cache    cache
+type temperatureDatabase struct {
+	*sql.DB
 }
 
 type location struct {
@@ -30,29 +23,21 @@ type temperatureLog struct {
 	Temperature float64
 }
 
-func openDatabase() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./database.db")
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-	return db, nil
-}
-
-func createTables(db *sql.DB) error {
-	_, err := db.Exec("create table if not exists locations (id integer not null primary key autoincrement, name text not null, lat real not null, long real not null)")
+func (tdb temperatureDatabase) CreateTables() error {
+	_, err := tdb.Exec("create table if not exists locations (id integer not null primary key autoincrement, name text not null, lat real not null, long real not null)")
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	_, err = db.Exec("create table if not exists logs (locationId integer not null, time int not null, temperature real not null)")
+	_, err = tdb.Exec("create table if not exists logs (locationId integer not null, time int not null, temperature real not null)")
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
 }
 
-func getTableLength(db *sql.DB, table string) (int, error) {
+func (tdb temperatureDatabase) GetTableLength(table string) (int, error) {
 	var len int
-	row := db.QueryRow("select count(*) from " + table)
+	row := tdb.QueryRow("select count(*) from " + table)
 	err := row.Scan(&len)
 	if err != nil {
 		return -1, errors.WithStack(err)
@@ -60,62 +45,44 @@ func getTableLength(db *sql.DB, table string) (int, error) {
 	return len, nil
 }
 
-func CachedDatabase() (cachedDatabase, error) {
-	database, err := openDatabase()
-	if err != nil {
-		return cachedDatabase{}, errors.WithStack(err)
-	}
-	err = createTables(database)
-	if err != nil {
-		return cachedDatabase{}, errors.WithStack(err)
-	}
-	cdb := cachedDatabase{
-		database,
-		cache{
-			make([]location, 0),
-			make([]temperatureLog, 0),
-		},
-	}
-	cdb.load()
-	return cdb, nil
+func (tdb temperatureDatabase) GetJson() ([]byte, error) {
+	return nil, nil
 }
 
-func (cdb *cachedDatabase) Close() {
-	cdb.Database.Close()
-}
-
-func (cdb *cachedDatabase) load() error {
-	cdb.Cache.Locations = make([]location, 0)
-	rows, err := cdb.Database.Query("select * from locations")
-	if err != nil {
-		return errors.WithStack(err)
+func (tdb temperatureDatabase) PopulateWithDefaults() error {
+	var defaultLocations = [5]location{
+		{-1, "Tokio", 35.6584421, 139.7328635},
+		{-1, "Helsinki", 60.1697530, 24.9490830},
+		{-1, "New York", 40.7406905, -73.9938438},
+		{-1, "Amsterdam", 52.3650691, 4.9040238},
+		{-1, "Dubai", 25.092535, 55.1562243},
 	}
-	for i := 0; rows.Next(); i++ {
-		var loc location
-		rows.Scan(&loc.Id, &loc.Name, &loc.Lat, &loc.Long)
-		cdb.Cache.Locations = append(cdb.Cache.Locations, loc)
+	for _, loc := range defaultLocations {
+		_, err := tdb.Exec("insert into locations(name, lat, long)"+
+			"select ?1,?2,?3 where not exists(select 1 from locations where name=?1 and lat=?2 and long=?3)",
+			loc.Name, loc.Lat, loc.Long)
+		if err != nil {
+			return errors.WithStack(err)
+		}
 	}
-
-	cdb.Cache.Logs = make([]temperatureLog, 0)
-	rows, err = cdb.Database.Query("select * from logs")
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	for i := 0; rows.Next(); i++ {
-		var log temperatureLog
-		rows.Scan(&log.LocationId, &log.Time, &log.Temperature)
-		cdb.Cache.Logs = append(cdb.Cache.Logs, log)
-	}
-
 	return nil
 }
 
-func (cdb cachedDatabase) GetJson() ([]byte, error) {
-	b, err := json.Marshal(cdb.Cache)
+func OpenDatabase(file string) (temperatureDatabase, error) {
+	db, err := sql.Open("sqlite3", file)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return temperatureDatabase{}, errors.WithStack(err)
 	}
-	return b, nil
+	tdb := temperatureDatabase{db}
+	err = tdb.CreateTables()
+	if err != nil {
+		return temperatureDatabase{}, errors.WithStack(err)
+	}
+	err = tdb.PopulateWithDefaults()
+	if err != nil {
+		return temperatureDatabase{}, errors.WithStack(err)
+	}
+	return tdb, nil
 }
 
 //If these locations do not exist in the database, they are automatically added in.
