@@ -36,61 +36,22 @@ func (tdb TemperatureDatabase) CreateTables() error {
 	return nil
 }
 
-// func (db *sqlx.DB) GetTableLength(table string) (int, error) {
-// 	var len int
-// 	row := tdb.QueryRow("select count(*) from " + table)
-// 	err := row.Scan(&len)
-// 	if err != nil {
-// 		return -1, errors.WithStack(err)
-// 	}
-// 	return len, nil
-// }
+func (tdb TemperatureDatabase) GetLocations() ([]Location, error) {
+	locations := make([]Location, 0)
+	tdb.Select(&locations, "select * from locations")
+	return locations, nil
+}
 
-// func (tdb TemperatureDatabase) GetLocations() ([]location, error) {
-// 	tableLength, err := tdb.GetTableLength("locations")
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	locations := make([]location, 0, tableLength)
-// 	tdb.Select(&locations, "select * from locations")
-// 	return locations, nil
-// }
-//
-// func (tdb TemperatureDatabase) GetLogs() ([]temperatureLog, error) {
-// 	tableLength, err := tdb.GetTableLength("logs")
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	logs := make([]temperatureLog, 0, tableLength)
-// 	tdb.Select(&logs, "select * from logs")
-// 	return logs, nil
-// }
+func (tdb TemperatureDatabase) GetLogs() ([]TemperatureLog, error) {
+	logs := make([]TemperatureLog, 0)
+	tdb.Select(&logs, "select * from logs")
+	return logs, nil
+}
 
-// func (tdb TemperatureDatabase) AddLog(tlog temperatureLog) error {
-// 	if tlog.Time < 0 || tlog.Time > time.Now().UTC().Unix() {
-// 		return errors.New("Time out of bounds")
-// 	}
-// 	// 373.15 kelvin equals 100 degrees Celcius
-// 	if tlog.Temperature < 0 || tlog.Temperature > 373.15 {
-// 		return errors.New("Temperature out of bounds")
-// 	}
-// 	locations, err := tdb.GetLocations()
-// 	if err != nil {
-// 		log.Print(err)
-// 		return errors.WithMessage(err, "Internal database error")
-// 	}
-// 	validLocation := false
-// 	for _, loc := range locations {
-// 		if loc.Id == tlog.LocationId {
-// 			validLocation = true
-// 		}
-// 	}
-// 	if !validLocation {
-// 		return errors.New("Invalid location")
-// 	}
-// 	_, err = tdb.Exec("insert into logs(locationId, time, temperature) values (?, ?, ?)", tlog.LocationId, tlog.Time, tlog.Temperature)
-// 	return errors.WithStack(err)
-// }
+func (tdb TemperatureDatabase) AddLog(tlog TemperatureLog) error {
+	_, err := tdb.Exec("insert into logs(locationId, time, temperature) values (?, ?, ?)", tlog.LocationId, tlog.Time, tlog.Temperature)
+	return errors.WithStack(err)
+}
 
 func (tdb TemperatureDatabase) PopulateWithDefaults() error {
 	var defaultLocations = [5]Location{
@@ -109,4 +70,19 @@ func (tdb TemperatureDatabase) PopulateWithDefaults() error {
 		}
 	}
 	return nil
+}
+
+func (tdb TemperatureDatabase) IsValidLocationId(id int64) (bool, error) {
+	validLocation := false
+	locations, err := tdb.GetLocations()
+	if err != nil {
+		return false, err
+	}
+	for _, loc := range locations {
+		if loc.Id == id {
+			validLocation = true
+			break
+		}
+	}
+	return validLocation, nil
 }
