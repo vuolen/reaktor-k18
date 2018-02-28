@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -12,6 +13,12 @@ import (
 )
 
 func main() {
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
 	tdb := db.TemperatureDatabase{sqlx.MustConnect("sqlite3", "./database.db")}
 	defer tdb.Close()
 	err := tdb.CreateTables()
@@ -31,5 +38,5 @@ func main() {
 	r.Methods("GET").Path("/logs/{locationId}").Name("GetLogsByLocationId").Handler(server.HandlerWithContext{ctx, server.GetLogsByLocationId})
 	r.Methods("POST").Path("/logs/add").Name("AddLog").Handler(server.HandlerWithContext{ctx, server.AddLog})
 	r.Methods("GET").PathPrefix("/").Name("FileServer").Handler(http.FileServer(http.Dir("./public-html")))
-	log.Printf("%+v", http.ListenAndServe(":8080", r))
+	log.Printf("%+v", http.ListenAndServe(":"+port, r))
 }
