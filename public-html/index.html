@@ -4,13 +4,53 @@
 	<head>
 	  <meta charset="utf-8">
 
-	  <title></title>
-
-	  <link rel="stylesheet" href="css/style.css">
+	  <link rel="stylesheet" type="text/css" href="css/style.css">
+	  <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+	  <link rel="stylesheet" type="text/css" href="css/jquery-ui-timepicker-addon.css">
 	</head>
 
 	<body>
+		<div id="map">
+		</div>
+		<div id="details">
+			<h1 id="details-name"></h1>
+			<div class="details-content">
+				<table id="history">
+				</table>
+			</div>
+			<div class="details-content">
+				<h3>Latest:</h3>
+				<div id="latest" class="details-indent"></div>
+				<h3>24h maximum:</h3>
+				<div id="maximum" class="details-indent"></div>
+				<h3>24h minimum:</h3>
+				<div id="minimum" class="details-indent"></div>
+			</div>
+			<div class="details-content">
+				<h3>Add log:</h3>
+				<form id="input" onsubmit="return false;">
+					Temperature: <br>
+					<input id="input-temperature" name="temperature" type="number" step="any" size="5" required></input>
+					<select id="input-temperatureunit">
+						<option value="celcius">Celcius</option>
+						<option value="fahrenheit">Fahrenheit</option>
+						<option value="kelvin">Kelvin</option>
+					</select><br>
+					Time: <br>
+					<input id="input-time" name="time" type="text" size="30" required></input> <br> <br>
+					<input value="Add log" type="submit"></input>
+				</form> 
+				<div id="input-message"></div>
+			</div>
+		</div>
+		
 		<script src="js/jquery-3.2.1.js"></script>
-	  <script src="js/main.js"></script>
+		<script src="js/jquery-ui.js"></script>
+		<script src="js/jquery-ui-timepicker-addon.js"></script>
+		<script src="js/underscore.js"></script>
+		<script src="js/main.js"></script>
+		<script async defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIokLbj2DDfasexUcXuOPkhU2qnnziWZc&callback=initMap">
+		</script>
 	</body>
 </html>
