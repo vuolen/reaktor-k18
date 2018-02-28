@@ -33,12 +33,12 @@ function displayLocationDetails(loc) {
 			});
 			var max = _.max(filtered, function(log) { return log.temperature; });
 			var min = _.min(filtered, function(log) { return log.temperature; });
-			if (isFinite(max)) {
+			if (max != Number.POSITIVE_INFINITY) {
 				$("#maximum").html(createLogElement(max))
 			} else {
 				$("#maximum").html("No logs available")
 			}
-			if (isFinite(min)) {
+			if (min != Number.NEGATIVE_INFINITY) {
 				$("#minimum").html(createLogElement(min))
 			} else {
 				$("#minimum").html("No logs available")

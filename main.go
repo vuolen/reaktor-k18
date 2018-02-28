@@ -28,6 +28,7 @@ func main() {
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/locations").Name("GetLocations").Handler(server.HandlerWithContext{ctx, server.GetLocations})
 	r.Methods("GET").Path("/logs").Name("GetLogs").Handler(server.HandlerWithContext{ctx, server.GetLogs})
+	r.Methods("GET").Path("/logs/{locationId}").Name("GetLogsByLocationId").Handler(server.HandlerWithContext{ctx, server.GetLogsByLocationId})
 	r.Methods("POST").Path("/logs/add").Name("AddLog").Handler(server.HandlerWithContext{ctx, server.AddLog})
 	r.Methods("GET").PathPrefix("/").Name("FileServer").Handler(http.FileServer(http.Dir("./public-html")))
 	log.Printf("%+v", http.ListenAndServe(":8080", r))

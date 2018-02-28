@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -39,8 +40,7 @@ func (hwc HandlerWithContext) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 
 func GetLocations(ctx *Context, w ApiResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	locations := make([]db.Location, 0)
-	err := ctx.Tdb.Select(&locations, "select * from locations")
+	locations, err := ctx.Tdb.GetLocations()
 	if err != nil {
 		w.WriteDefaultError(http.StatusInternalServerError)
 		return errors.WithStack(err)
@@ -55,8 +55,27 @@ func GetLocations(ctx *Context, w ApiResponseWriter, r *http.Request) error {
 
 func GetLogs(ctx *Context, w ApiResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	logs := make([]db.TemperatureLog, 0)
-	err := ctx.Tdb.Select(&logs, "select * from logs")
+	logs, err := ctx.Tdb.GetLogs()
+	if err != nil {
+		w.WriteDefaultError(http.StatusInternalServerError)
+		return errors.WithStack(err)
+	}
+	json.NewEncoder(w).Encode(logs)
+	if err != nil {
+		w.WriteDefaultError(http.StatusInternalServerError)
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func GetLogsByLocationId(ctx *Context, w ApiResponseWriter, r *http.Request) error {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	locationId, err := strconv.Atoi(mux.Vars(r)["locationId"])
+	if err != nil {
+		w.WriteDefaultError(http.StatusInternalServerError)
+		return errors.WithStack(err)
+	}
+	logs, err := ctx.Tdb.GetLogsByLocationId(locationId)
 	if err != nil {
 		w.WriteDefaultError(http.StatusInternalServerError)
 		return errors.WithStack(err)

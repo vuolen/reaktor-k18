@@ -48,6 +48,12 @@ func (tdb TemperatureDatabase) GetLogs() ([]TemperatureLog, error) {
 	return logs, nil
 }
 
+func (tdb TemperatureDatabase) GetLogsByLocationId(locationId int) ([]TemperatureLog, error) {
+	logs := make([]TemperatureLog, 0)
+	tdb.Select(&logs, "select * from logs where locationId=?", locationId)
+	return logs, nil
+}
+
 func (tdb TemperatureDatabase) AddLog(tlog TemperatureLog) error {
 	_, err := tdb.Exec("insert into logs(locationId, time, temperature) values (?, ?, ?)", tlog.LocationId, tlog.Time, tlog.Temperature)
 	return errors.WithStack(err)
