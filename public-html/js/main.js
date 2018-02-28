@@ -74,9 +74,9 @@ function createLogElement(log) {
 
 function message(err, msg) {
 	if (err) {
-		$("#input-message").addClass("message--error");
+		$("#input-message").addClass("message-error");
 	} else {
-		$("#input-message").removeClass("message--error");
+		$("#input-message").removeClass("message-error");
 	}
 	$("#input-message").html(msg)
 }
