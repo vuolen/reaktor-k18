@@ -1,6 +1,43 @@
 {
 	"comment": "",
 	"ignore": "test",
-	"package": [],
+	"package": [
+		{
+			"checksumSHA1": "IkPM2QLv9urri7S49wzroQx9oXA=",
+			"path": "github.com/gorilla/context",
+			"revision": "08b5f424b9271eedf6f9f0ce86cb9396ed337a42",
+			"revisionTime": "2016-08-17T18:46:32Z"
+		},
+		{
+			"checksumSHA1": "WDwy+CLWP4zY7vELzo0gC477VxU=",
+			"path": "github.com/gorilla/mux",
+			"revision": "07ba1fd60e210dc5cc6f86ec25dc9ecc7c95c295",
+			"revisionTime": "2018-02-26T05:11:51Z"
+		},
+		{
+			"checksumSHA1": "DESETAi+uFXk6NygFHJ1SwuvcQY=",
+			"path": "github.com/jmoiron/sqlx",
+			"revision": "cf35089a197953c69420c8d0cecda90809764b1d",
+			"revisionTime": "2018-02-28T18:46:24Z"
+		},
+		{
+			"checksumSHA1": "JxArBxGNRy8PAAM5Rv6gzyuGgu8=",
+			"path": "github.com/jmoiron/sqlx/reflectx",
+			"revision": "cf35089a197953c69420c8d0cecda90809764b1d",
+			"revisionTime": "2018-02-28T18:46:24Z"
+		},
+		{
+			"checksumSHA1": "6h16VravQvdUE+A7wCmrmv/pbHE=",
+			"path": "github.com/mattn/go-sqlite3",
+			"revision": "696e2e43cb00dcb1acaf6073e01493e3c4197b75",
+			"revisionTime": "2018-02-18T13:15:52Z"
+		},
+		{
+			"checksumSHA1": "d6BycwPpKXW09I/tXMqcItE8SA4=",
+			"path": "github.com/pkg/errors",
+			"revision": "30136e27e2ac8d167177e8a583aa4c3fea5be833",
+			"revisionTime": "2018-01-27T01:58:12Z"
+		}
+	],
 	"rootPath": "github.com/vuolen/reaktor-k18"
 }
