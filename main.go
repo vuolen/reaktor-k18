@@ -38,5 +38,6 @@ func main() {
 	r.Methods("GET").Path("/logs/{locationId}").Name("GetLogsByLocationId").Handler(server.HandlerWithContext{ctx, server.GetLogsByLocationId})
 	r.Methods("POST").Path("/logs/add").Name("AddLog").Handler(server.HandlerWithContext{ctx, server.AddLog})
 	r.Methods("GET").PathPrefix("/").Name("FileServer").Handler(http.FileServer(http.Dir("./public-html")))
+	log.Printf("Starting server on port %s", port)
 	log.Printf("%+v", http.ListenAndServe(":"+port, r))
 }
