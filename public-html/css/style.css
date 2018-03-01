@@ -24,11 +24,14 @@ body {
 	height: 100%;
 }
 
-.details-content {
-	padding: 5px;
-	margin: 5px;
-	border: 1px solid black;
-	float: left;
+.details-table {
+	width: 100%;
+	table-layout: fixed;
+}
+
+.details-cell {
+	border: black solid 1px;
+	text-align: center;
 }
 
 .details-indent {
@@ -39,7 +42,12 @@ body {
 	color: red;
 }
 
-th, td {
-	padding: 2px;
+#history {
+	width: 100%;
+}
+
+#history > tr > th, td {
+	padding: 5px;
 	border: 1px solid black;
+	text-align: center;
 }
