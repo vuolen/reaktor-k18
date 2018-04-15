@@ -12,13 +12,61 @@ body {
 	width: 90%;
 	margin-left: auto;
 	margin-right: auto;
+	scroll-behavior: smooth;
 }
 
-#map {
+#app, #map {
 	width: 100%;
 	height: 100%;
 }
 
+.map-loading {
+	text-align: center;
+}
+
+.details-header {
+	width: 100%;
+	text-align: center;
+}
+
+#details-latest {
+	box-sizing: border-box;
+	width: 100%;
+	text-align: center;
+	padding: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	border: 1px solid black;
+}
+
+#details-addlog {
+	box-sizing: border-box;
+	width: 100%;
+	text-align: center;
+	padding: 10px;
+	margin-bottom: 10px;
+	border: 1px solid black;
+}
+
+#details-logtable {
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	table-layout: fixed;
+	border: 1px solid black;
+}
+
+#details-tempsetting {
+	text-align: center;
+}
+
+td, th {
+	padding: 5px;
+	border: 1px solid black;
+}
+
+/* 
 #details {
 	width: 100%;
 	height: 100%;
@@ -50,4 +98,4 @@ body {
 	padding: 5px;
 	border: 1px solid black;
 	text-align: center;
-}
+} */
